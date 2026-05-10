@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>빛의 반사를 이해해보자! _금배과학</title>
+    <title>빛의 반사와 파동 원리 마스터 시뮬레이션</title>
     <style>
         /* ---------------------------------------------------
            전체 공통 및 탭 네비게이션 스타일 
@@ -15,30 +15,34 @@
             align-items: center;
             padding: 0;
             margin: 0;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.4s, color 0.4s;
             background-color: #f8f9fa;
             color: #333;
+            overflow-x: hidden;
         }
 
         #tab-nav {
             width: 100%;
-            background-color: #222;
+            background-color: #111;
             padding: 15px 0;
             display: flex;
             justify-content: center;
             gap: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .tab-btn {
             padding: 12px 25px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            background-color: #444;
+            background-color: #333;
             color: #aaa;
             font-family: inherit;
             transition: 0.3s;
@@ -47,15 +51,17 @@
         .tab-btn:hover { background-color: #555; color: #fff; }
         .tab-btn#btn-tab1.active { background-color: #1a73e8; color: #fff; }
         .tab-btn#btn-tab2.active { background-color: #4fc3f7; color: #000; }
+        .tab-btn#btn-tab3.active { background-color: #deff9a; color: #000; }
 
+        .wrapper { display: flex; justify-content: center; width: 100%; padding-bottom: 40px; }
+        
         /* ---------------------------------------------------
-           시뮬레이션 1 (방사형 구면파) 원본 CSS
+           시뮬레이션 1 (방사형 반사 법칙)
            --------------------------------------------------- */
-        #sim1-wrapper { display: flex; justify-content: center; width: 100%; padding-bottom: 20px; }
-        #sim1-wrapper .app-container { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 900px; max-width: 95vw; }
+        #sim1-wrapper .app-container { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 950px; max-width: 95vw; }
         #sim1-wrapper header { text-align: center; margin-bottom: 25px; }
-        #sim1-wrapper h1 { margin: 0; font-size: 24px; color: #1a73e8; }
-        #sim1-wrapper p.subtitle { margin: 5px 0 0; color: #666; font-size: 14px; }
+        #sim1-wrapper h1 { margin: 0; font-size: 26px; color: #1a73e8; }
+        #sim1-wrapper p.subtitle { margin: 8px 0 0; color: #666; font-size: 15px; }
         #sim1-wrapper canvas { background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; width: 100%; height: 500px; display: block; }
         #sim1-wrapper .controls { margin-top: 25px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         #sim1-wrapper .control-item { display: flex; flex-direction: column; gap: 10px; }
@@ -66,21 +72,20 @@
         #sim1-wrapper .btn { padding: 10px 20px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; font-weight: 600; transition: all 0.2s; color: #555; }
         #sim1-wrapper .btn:hover { border-color: #1a73e8; color: #1a73e8; }
         #sim1-wrapper .btn.active { background: #1a73e8; border-color: #1a73e8; color: white; }
-        #sim1-wrapper .info-box { margin-top: 20px; padding: 15px; background: #e8f0fe; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #1967d2; }
+        #sim1-wrapper .info-box { margin-top: 20px; padding: 15px; background: #e8f0fe; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #1967d2; }
 
         /* ---------------------------------------------------
-           시뮬레이션 2 (S자 파동 간섭) 원본 CSS
+           시뮬레이션 2 (파인만 간섭 원리)
            --------------------------------------------------- */
-        #sim2-wrapper { display: flex; justify-content: center; width: 100%; padding-bottom: 20px; }
-        #sim2-wrapper .app-container { background: #1a1a1a; padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); width: 1000px; max-width: 95vw; color: #eee; }
+        #sim2-wrapper .app-container { background: #1a1a1a; padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); width: 1050px; max-width: 95vw; color: #eee; }
         #sim2-wrapper header { text-align: center; margin-bottom: 20px; }
-        #sim2-wrapper h1 { margin: 0; font-size: 24px; color: #4fc3f7; }
-        #sim2-wrapper p.subtitle { margin: 8px 0 0; color: #aaa; font-size: 14.5px; line-height: 1.5; }
+        #sim2-wrapper h1 { margin: 0; font-size: 26px; color: #4fc3f7; }
+        #sim2-wrapper p.subtitle { margin: 8px 0 0; color: #aaa; font-size: 15px; line-height: 1.5; }
         #sim2-wrapper canvas { background: #000000; border: 1px solid #333; border-radius: 8px; width: 100%; height: 500px; display: block; }
         #sim2-wrapper .controls { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         #sim2-wrapper .control-item { display: flex; flex-direction: column; gap: 8px; }
         #sim2-wrapper label { font-size: 13px; color: #bbb; font-weight: bold; }
-        #sim2-wrapper input[type="range"] { width: 100%; cursor: pointer; }
+        #sim2-wrapper input[type="range"] { width: 100%; cursor: pointer; accent-color: #4fc3f7; }
         #sim2-wrapper .btn-group { grid-column: span 3; display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
         #sim2-wrapper .btn { padding: 10px 20px; border: none; border-radius: 6px; background: #333; color: #eee; cursor: pointer; font-weight: 600; transition: 0.2s; }
         #sim2-wrapper .btn:hover { background: #444; }
@@ -90,36 +95,59 @@
         #sim2-wrapper .color-box { width: 14px; height: 14px; border-radius: 3px; }
         #sim2-wrapper .color-red { background: #ff4444; }
         #sim2-wrapper .color-blue { background: #4499ff; }
+
+        /* ---------------------------------------------------
+           시뮬레이션 3 (호이겐스 전파 원리 및 슬릿)
+           --------------------------------------------------- */
+        #sim3-wrapper .app-container { background: #1a1a1a; padding: 25px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); width: 1050px; max-width: 95vw; color: #eee; }
+        #sim3-wrapper header { text-align: center; margin-bottom: 20px; }
+        #sim3-wrapper h1 { margin: 0; font-size: 26px; color: #deff9a; }
+        #sim3-wrapper p.subtitle { margin: 8px 0 0; color: #aaa; font-size: 15px; line-height: 1.5; }
+        #sim3-wrapper canvas { background: #050505; border: 1px solid #333; border-radius: 8px; width: 100%; height: 550px; display: block; }
+        #sim3-wrapper .controls { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        #sim3-wrapper .control-item { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        #sim3-wrapper label { font-size: 14px; color: #bbb; font-weight: bold; }
+        #sim3-wrapper label span { color: #deff9a; font-size: 15px;}
+        #sim3-wrapper input[type="range"] { width: 80%; cursor: pointer; accent-color: #deff9a; }
+        #sim3-wrapper .btn-group { grid-column: span 2; display: flex; justify-content: center; gap: 12px; margin-top: 5px; flex-wrap: wrap; }
+        #sim3-wrapper .btn { padding: 10px 20px; border: 1px solid #444; border-radius: 6px; background: #252525; color: #eee; cursor: pointer; font-size: 14px; font-weight: 600; transition: 0.2s; }
+        #sim3-wrapper .btn:hover { background: #333; }
+        #sim3-wrapper .btn.active { background: #deff9a; color: #000; border-color: #deff9a; }
+        #sim3-wrapper .btn-slit { border-color: #4fc3f7; color: #4fc3f7; }
+        #sim3-wrapper .btn-slit.active { background: #4fc3f7; color: #000; }
+        #sim3-wrapper .info-box { margin-top: 20px; padding: 15px; background: rgba(222, 255, 154, 0.08); border-left: 4px solid #deff9a; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #f5f5f5; }
+
     </style>
 </head>
 <body onload="switchTab(1)">
 
     <div id="tab-nav">
-        <button id="btn-tab1" class="tab-btn active" onclick="switchTab(1)">반사의 법칙</button>
-        <button id="btn-tab2" class="tab-btn" onclick="switchTab(2)">입사각과 반사각이 왜 같을까</button>
+        <button id="btn-tab1" class="tab-btn active" onclick="switchTab(1)">1. 반사의 법칙</button>
+        <button id="btn-tab2" class="tab-btn" onclick="switchTab(2)">2. 입사각과 반사각이 왜 같을까?</button>
+        <button id="btn-tab3" class="tab-btn" onclick="switchTab(3)">3. 빛이 퍼져나가는 원리</button>
     </div>
 
-    <div id="sim1-wrapper">
+    <div id="sim1-wrapper" class="wrapper">
         <div class="app-container">
             <header>
                 <h1>반사의 법칙: 입사각과 반사각</h1>
-                <p class="subtitle">퍼져나가는 빛이 반사의 법칙을 따르는 이유</p>
+                <p class="subtitle">퍼져나가는 빛이 반사의 법칙을 따르는 현상을 확인합니다.</p>
             </header>
 
-            <canvas id="reflectionCanvas"></canvas>
+            <canvas id="canvas1"></canvas>
 
             <div class="controls">
                 <div class="control-item">
-                    <label>입사각 (θ) <span id="angleValue">45°</span></label>
-                    <input type="range" id="angleSlider" min="10" max="80" value="45">
+                    <label>입사각 (θ) <span id="angleValue1">45°</span></label>
+                    <input type="range" id="angleSlider1" min="10" max="80" value="45">
                 </div>
                 <div class="control-item">
                     <label>파동 속도 <span id="speedValue1">5</span></label>
                     <input type="range" id="speedSlider1" min="1" max="15" value="5">
                 </div>
                 <div class="control-item">
-                    <label>파동 빈도 <span id="freqValue">5</span></label>
-                    <input type="range" id="freqSlider" min="1" max="15" value="5">
+                    <label>파동 빈도 <span id="freqValue1">5</span></label>
+                    <input type="range" id="freqSlider1" min="1" max="15" value="5">
                 </div>
 
                 <div class="mode-selector">
@@ -135,27 +163,27 @@
         </div>
     </div>
 
-    <div id="sim2-wrapper" style="display:none;">
+    <div id="sim2-wrapper" class="wrapper" style="display:none;">
         <div class="app-container">
             <header>
                 <h1>입사각과 반사각이 같아지는 이유</h1>
                 <p class="subtitle">
-                    <b>입사각과 반사각</b>이 <b>다른</b>경로는 서로 상쇄?!
+                    <b>입사각과 반사각</b>이 <b>다른</b> 경로는 서로 어긋나 상쇄되어 사라집니다!
                 </p>
             </header>
 
             <div class="legend-bar">
                 <div class="legend-item"><div class="color-box color-red"></div> 붉은색(+) : 파동의 마루</div>
                 <div class="legend-item"><div class="color-box color-blue"></div> 푸른색(-) : 파동의 골</div>
-                <div class="legend-item" style="color:#aaa; margin-left: 10px;">※ 서로 엇갈려 겹치면 상쇄되어 빛이 소멸합니다.</div>
+                <div class="legend-item" style="color:#aaa; margin-left: 10px;">※ 서로 엇갈려 겹치면 에너지가 상쇄되어 빛이 소멸합니다.</div>
             </div>
 
-            <canvas id="simCanvas" style="margin-top: 20px;"></canvas>
+            <canvas id="canvas2" style="margin-top: 20px;"></canvas>
 
             <div class="controls">
                 <div class="control-item">
                     <label>파장 (물결의 길이)</label>
-                    <input type="range" id="waveSlider" min="20" max="60" value="40">
+                    <input type="range" id="waveSlider2" min="20" max="60" value="40">
                 </div>
                 <div class="control-item">
                     <label>파동 이동 속도</label>
@@ -163,7 +191,7 @@
                 </div>
                 <div class="control-item">
                     <label>거울 차단막 너비 (가운데 가림막 조절)</label>
-                    <input type="range" id="maskWidthSlider" min="50" max="400" value="150">
+                    <input type="range" id="maskWidthSlider2" min="50" max="400" value="150">
                 </div>
 
                 <div class="btn-group">
@@ -171,6 +199,43 @@
                     <button class="btn" data-mode="center_only">중앙만 열기 (강한 보강!)</button>
                     <button class="btn" data-mode="edges_only">중앙 가리기 (미세한 상쇄 파동!)</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sim3-wrapper" class="wrapper" style="display:none;">
+        <div class="app-container">
+            <header>
+                <h1>빛이 퍼져나가는 원리: 새로운 물결의 시작</h1>
+                <p class="subtitle">
+                    빛은 나아가며 끊임없이 자기를 복제합니다. 앞선만 보강되어 우리가 보는 빛이 됩니다.
+                </p>
+            </header>
+
+            <canvas id="canvas3"></canvas>
+
+            <div class="controls">
+                <div class="btn-group">
+                    <button class="btn" data-mode="primary">1. 우리가 보는 빛의 모습</button>
+                    <button class="btn" data-mode="secondary">2. 빛을 만드는 작은 물결들</button>
+                    <button class="btn active" data-mode="both">3. 함께 보기 (실제 원리)</button>
+                    <button class="btn btn-slit" id="slitToggle3">실험: 장애물(슬릿) 설치</button>
+                </div>
+
+                <div class="control-item" style="margin-top: 10px;">
+                    <label>점광원 개수: <span id="dotCountVal3">24개</span></label>
+                    <input type="range" id="dotCount3" min="8" max="60" value="24">
+                </div>
+                <div class="control-item" style="margin-top: 10px;">
+                    <label>작은 물결(2차 파동) 진하기: <span id="opacityVal3">기본</span></label>
+                    <input type="range" id="opacitySlider3" min="0.05" max="0.6" step="0.05" value="0.2">
+                </div>
+            </div>
+
+            <div class="info-box">
+                💡 <b>탐구 포인트:</b><br>
+                1. <b>중첩의 원리:</b> 수많은 작은 물결(파란색 원)들이 앞쪽에서 겹칠 때만 선명한 선이 생기는 것을 관찰하세요.<br>
+                2. <b>장애물 실험:</b> 장애물을 설치하면 대부분 막히지만, <b>좁은 틈(슬릿)을 통과하면 그 틈의 우측 끝이 완전히 '새로운 광원'이 되어 다시 퍼져나갑니다.</b>
             </div>
         </div>
     </div>
@@ -183,39 +248,40 @@
 
     function switchTab(tabId) {
         currentTab = tabId;
+        for(let i=1; i<=3; i++) {
+            document.getElementById(`sim${i}-wrapper`).style.display = (i === tabId) ? 'flex' : 'none';
+            const btn = document.getElementById(`btn-tab${i}`);
+            if(i === tabId) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+        
+        // 배경 테마 전환
         if (tabId === 1) {
-            document.getElementById('sim1-wrapper').style.display = 'flex';
-            document.getElementById('sim2-wrapper').style.display = 'none';
-            document.getElementById('btn-tab1').classList.add('active');
-            document.getElementById('btn-tab2').classList.remove('active');
             document.body.style.backgroundColor = '#f8f9fa';
             document.body.style.color = '#333';
         } else {
-            document.getElementById('sim1-wrapper').style.display = 'none';
-            document.getElementById('sim2-wrapper').style.display = 'flex';
-            document.getElementById('btn-tab1').classList.remove('active');
-            document.getElementById('btn-tab2').classList.add('active');
             document.body.style.backgroundColor = '#0f0f0f';
             document.body.style.color = '#eee';
         }
-        // 탭이 바뀔 때마다 캔버스 크기를 다시 맞추도록 이벤트 발생
-        setTimeout(() => window.dispatchEvent(new Event('resize')), 10);
+        
+        // 탭 바뀔 때 캔버스 리사이징 트리거
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 20);
     }
 
     // ===================================================
-    // 시뮬레이션 1 JS (변수 충돌 방지를 위해 함수로 감쌈)
+    // 시뮬레이션 1 (방사형 구면파 반사)
     // ===================================================
     function initSim1() {
-        const canvas = document.getElementById('reflectionCanvas');
+        const canvas = document.getElementById('canvas1');
         const ctx = canvas.getContext('2d');
-        const angleSlider = document.getElementById('angleSlider');
+        const angleSlider = document.getElementById('angleSlider1');
         const speedSlider = document.getElementById('speedSlider1');
-        const freqSlider = document.getElementById('freqSlider');
+        const freqSlider = document.getElementById('freqSlider1');
         const modeButtons = document.querySelectorAll('#sim1-wrapper .btn');
 
-        const angleLabel = document.getElementById('angleValue');
+        const angleLabel = document.getElementById('angleValue1');
         const speedLabel = document.getElementById('speedValue1');
-        const freqLabel = document.getElementById('freqValue');
+        const freqLabel = document.getElementById('freqValue1');
 
         let mode = 'both';
         let time = 0;
@@ -238,12 +304,9 @@
         });
 
         function draw() {
-            // 다른 탭에 있을 때는 연산을 멈추어 컴퓨터 자원 절약
             if(currentTab !== 1) { requestAnimationFrame(draw); return; }
-
             const width = canvas.width / window.devicePixelRatio;
             const height = canvas.height / window.devicePixelRatio;
-            
             ctx.clearRect(0, 0, width, height);
 
             const angle = parseInt(angleSlider.value);
@@ -317,7 +380,6 @@
                 
                 const angleS = Math.atan2(centerY - sourceY, centerX - sourceX);
                 const angleV = Math.atan2(centerY - virtualY, centerX - virtualX);
-
                 let offset = time % waveLength;
                 
                 ctx.save();
@@ -344,6 +406,12 @@
                 }
                 ctx.restore(); 
             }
+
+            ctx.fillStyle = '#f44336';
+            ctx.beginPath(); ctx.arc(sourceX, sourceY, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.font = 'bold 15px Pretendard';
+            ctx.textAlign = 'center';
+            ctx.fillText('광원', sourceX, sourceY - 12);
 
             ctx.font = '600 15px Pretendard';
             ctx.textAlign = 'center';
@@ -378,25 +446,22 @@
             ctx.lineTo(midX - headlen * Math.cos(angle + Math.PI/7), midY - headlen * Math.sin(angle + Math.PI/7));
             ctx.fill();
         }
-
         draw();
     }
 
     // ===================================================
-    // 시뮬레이션 2 JS (변수 충돌 방지를 위해 함수로 감쌈)
+    // 시뮬레이션 2 (파인만 S자 간섭 경로)
     // ===================================================
     function initSim2() {
-        const canvas = document.getElementById('simCanvas');
+        const canvas = document.getElementById('canvas2');
         const ctx = canvas.getContext('2d');
-        
-        const waveSlider = document.getElementById('waveSlider');
+        const waveSlider = document.getElementById('waveSlider2');
         const speedSlider = document.getElementById('speedSlider2');
-        const maskWidthSlider = document.getElementById('maskWidthSlider');
+        const maskWidthSlider = document.getElementById('maskWidthSlider2');
         const modeBtns = document.querySelectorAll('#sim2-wrapper .btn');
 
         let mode = 'all'; 
         let time = 0;
-
         const sourceHistory = new Array(100).fill(0);
         const destHistory = new Array(100).fill(0);
 
@@ -421,29 +486,22 @@
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 1;
             ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke(); 
-
             ctx.setLineDash([2, 4]);
             ctx.beginPath(); ctx.moveTo(x, y - h/2); ctx.lineTo(x + w, y - h/2); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(x, y + h/2); ctx.lineTo(x + w, y + h/2); ctx.stroke();
             ctx.setLineDash([]);
-
             ctx.fillStyle = '#ccc'; ctx.font = '13px Pretendard'; ctx.textAlign = 'center';
             ctx.fillText(title, x + w/2, y + h/2 + 25);
-
+            
             for(let i = 0; i < data.length - 1; i++) {
                 let px1 = x + w - i * (w / 100);
                 let py1 = y - (data[i] / range) * (h / 2); 
                 let px2 = x + w - (i + 1) * (w / 100);
                 let py2 = y - (data[i+1] / range) * (h / 2);
-                
-                ctx.beginPath();
-                ctx.moveTo(px1, py1);
-                ctx.lineTo(px2, py2);
-                ctx.strokeStyle = data[i] > 0 ? 'rgba(255, 80, 80, 0.9)' : 'rgba(80, 150, 255, 0.9)';
-                ctx.lineWidth = 2.5;
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(px1, py1); ctx.lineTo(px2, py2); 
+                ctx.strokeStyle = data[i] > 0 ? 'rgba(255, 80, 80, 0.9)' : 'rgba(80, 150, 255, 0.9)'; 
+                ctx.lineWidth = 2.5; ctx.stroke();
             }
-
             let current = data[0];
             ctx.fillStyle = current > 0 ? 'rgba(255, 80, 80, 0.8)' : 'rgba(80, 150, 255, 0.8)';
             ctx.fillRect(x + w, y, 6, -(current / range) * (h / 2));
@@ -451,117 +509,62 @@
 
         function draw() {
             if(currentTab !== 2) { requestAnimationFrame(draw); return; }
-
             const width = canvas.width / window.devicePixelRatio;
             const height = canvas.height / window.devicePixelRatio;
             
-            ctx.fillStyle = '#050505';
+            ctx.fillStyle = '#050505'; 
             ctx.fillRect(0, 0, width, height);
-
+            
             const lambda = parseInt(waveSlider.value);
             const speed = parseInt(speedSlider.value) * 0.03; 
             const maskWidth = parseInt(maskWidthSlider.value);
             time += speed;
-
-            const startX = width * 0.25;
-            const startY = 160; 
-            const endX = width * 0.75;
-            const endY = 160;
-            const mirrorY = height - 50; 
-            const mirrorCenterX = (startX + endX) / 2;
-
+            
+            const startX = width * 0.25, startY = 160, endX = width * 0.75, endY = 160;
+            const mirrorY = height - 50, mirrorCenterX = (startX + endX) / 2;
+            
             let denseAmpSum = 0;
             const k = Math.PI * 2 / lambda;
             
             for (let mx = 60; mx <= width - 60; mx += 2) {
-                let isBlocked = false;
-                if (mode === 'center_only') {
-                    if (mx < mirrorCenterX - maskWidth/2 || mx > mirrorCenterX + maskWidth/2) isBlocked = true;
-                } else if (mode === 'edges_only') {
-                    if (mx >= mirrorCenterX - maskWidth/2 && mx <= mirrorCenterX + maskWidth/2) isBlocked = true;
-                }
-
+                let isBlocked = (mode === 'center_only' && (mx < mirrorCenterX - maskWidth/2 || mx > mirrorCenterX + maskWidth/2)) || 
+                                (mode === 'edges_only' && (mx >= mirrorCenterX - maskWidth/2 && mx <= mirrorCenterX + maskWidth/2));
                 if (!isBlocked) {
                     const totalD = Math.hypot(mx - startX, mirrorY - startY) + Math.hypot(endX - mx, endY - mirrorY);
                     denseAmpSum += Math.cos(k * totalD - time);
                 }
             }
-
             let averageAmp = denseAmpSum / 40; 
             if (mode === 'center_only') averageAmp *= 1.2; 
 
-            ctx.save();
-            ctx.globalCompositeOperation = 'lighter'; 
-
-            const pathsCount = 13; 
-            const step = (width - 120) / (pathsCount - 1);
-            const waveAmp = 5; 
-
+            ctx.save(); ctx.globalCompositeOperation = 'lighter'; 
+            const pathsCount = 13, step = (width - 120) / (pathsCount - 1), waveAmp = 5; 
+            
             for (let mx = 60; mx <= width - 60; mx += step) {
-                let isBlocked = false;
-                if (mode === 'center_only') {
-                    if (mx < mirrorCenterX - maskWidth/2 || mx > mirrorCenterX + maskWidth/2) isBlocked = true;
-                } else if (mode === 'edges_only') {
-                    if (mx >= mirrorCenterX - maskWidth/2 && mx <= mirrorCenterX + maskWidth/2) isBlocked = true;
-                }
-
+                let isBlocked = (mode === 'center_only' && (mx < mirrorCenterX - maskWidth/2 || mx > mirrorCenterX + maskWidth/2)) || 
+                                (mode === 'edges_only' && (mx >= mirrorCenterX - maskWidth/2 && mx <= mirrorCenterX + maskWidth/2));
                 if (!isBlocked) {
-                    const d1 = Math.hypot(mx - startX, mirrorY - startY);
-                    const d2 = Math.hypot(endX - mx, endY - mirrorY);
-                    const totalD = d1 + d2;
+                    const d1 = Math.hypot(mx - startX, mirrorY - startY), d2 = Math.hypot(endX - mx, endY - mirrorY), totalD = d1 + d2;
+                    const lineStep = 3; let lastSign = 0; ctx.lineWidth = 2.5;
                     
-                    const lineStep = 3; 
-                    let lastSign = 0;
-                    ctx.lineWidth = 2.5;
-
                     for (let d = 0; d <= totalD; d += lineStep) {
                         let baseX, baseY, angle;
+                        if (d <= d1) { baseX = startX + (mx - startX) * (d / d1); baseY = startY + (mirrorY - startY) * (d / d1); angle = Math.atan2(mirrorY - startY, mx - startX); }
+                        else { baseX = mx + (endX - mx) * ((d - d1) / d2); baseY = mirrorY + (endY - mirrorY) * ((d - d1) / d2); angle = Math.atan2(endY - mirrorY, endX - mx); }
                         
-                        if (d <= d1) {
-                            const ratio = d / d1;
-                            baseX = startX + (mx - startX) * ratio;
-                            baseY = startY + (mirrorY - startY) * ratio;
-                            angle = Math.atan2(mirrorY - startY, mx - startX);
-                        } else {
-                            const ratio = (d - d1) / d2;
-                            baseX = mx + (endX - mx) * ratio;
-                            baseY = mirrorY + (endY - mirrorY) * ratio;
-                            angle = Math.atan2(endY - mirrorY, endX - mx);
-                        }
-
-                        const val = Math.cos(k * d - time);
-                        const perpX = Math.cos(angle - Math.PI/2);
-                        const perpY = Math.sin(angle - Math.PI/2);
+                        const val = Math.cos(k * d - time), perpX = Math.cos(angle - Math.PI/2), perpY = Math.sin(angle - Math.PI/2);
+                        const drawX = baseX + perpX * val * waveAmp, drawY = baseY + perpY * val * waveAmp, sign = val >= 0 ? 1 : -1;
                         
-                        const drawX = baseX + perpX * val * waveAmp;
-                        const drawY = baseY + perpY * val * waveAmp;
-
-                        const sign = val >= 0 ? 1 : -1;
-
                         if (sign !== lastSign || d === 0) {
                             if (d > 0) ctx.stroke();
-                            ctx.beginPath();
-                            ctx.strokeStyle = sign === 1 ? 'rgba(255, 60, 60, 0.4)' : 'rgba(60, 150, 255, 0.4)';
-                            
+                            ctx.beginPath(); ctx.strokeStyle = sign === 1 ? 'rgba(255, 60, 60, 0.4)' : 'rgba(60, 150, 255, 0.4)';
                             if (d > 0) {
-                                const prevD = d - lineStep;
-                                let pBaseX, pBaseY, pAngle;
-                                if (prevD <= d1) {
-                                    pBaseX = startX + (mx - startX) * (prevD / d1);
-                                    pBaseY = startY + (mirrorY - startY) * (prevD / d1);
-                                    pAngle = Math.atan2(mirrorY - startY, mx - startX);
-                                } else {
-                                    pBaseX = mx + (endX - mx) * ((prevD - d1) / d2);
-                                    pBaseY = mirrorY + (endY - mirrorY) * ((prevD - d1) / d2);
-                                    pAngle = Math.atan2(endY - mirrorY, endX - mx);
-                                }
-                                const pVal = Math.cos(k * prevD - time);
-                                const pPerpX = Math.cos(pAngle - Math.PI/2);
-                                const pPerpY = Math.sin(pAngle - Math.PI/2);
+                                const prevD = d - lineStep; let pBaseX, pBaseY, pAngle;
+                                if (prevD <= d1) { pBaseX = startX + (mx - startX) * (prevD / d1); pBaseY = startY + (mirrorY - startY) * (prevD / d1); pAngle = Math.atan2(mirrorY - startY, mx - startX); }
+                                else { pBaseX = mx + (endX - mx) * ((prevD - d1) / d2); pBaseY = mirrorY + (endY - mirrorY) * ((prevD - d1) / d2); pAngle = Math.atan2(endY - mirrorY, endX - mx); }
+                                const pVal = Math.cos(k * prevD - time), pPerpX = Math.cos(pAngle - Math.PI/2), pPerpY = Math.sin(pAngle - Math.PI/2);
                                 ctx.moveTo(pBaseX + pPerpX * pVal * waveAmp, pBaseY + pPerpY * pVal * waveAmp);
-                            } else {
-                                ctx.moveTo(drawX, drawY);
-                            }
+                            } else ctx.moveTo(drawX, drawY);
                             lastSign = sign;
                         }
                         ctx.lineTo(drawX, drawY);
@@ -571,59 +574,262 @@
             }
             ctx.restore();
             
-            const sourceVal = Math.cos(-time); 
-            sourceHistory.unshift(sourceVal);
-            if(sourceHistory.length > 100) sourceHistory.pop();
-
-            destHistory.unshift(averageAmp);
-            if(destHistory.length > 100) destHistory.pop();
-
-            ctx.lineWidth = 10;
-            ctx.lineCap = 'round';
+            const sourceVal = Math.cos(-time); sourceHistory.unshift(sourceVal); if(sourceHistory.length > 100) sourceHistory.pop();
+            destHistory.unshift(averageAmp); if(destHistory.length > 100) destHistory.pop();
+            
+            ctx.lineWidth = 10; ctx.lineCap = 'round';
             for (let mx = 60; mx <= width - 60; mx += 2) {
-                let isBlocked = false;
-                if (mode === 'center_only' && (mx < mirrorCenterX - maskWidth/2 || mx > mirrorCenterX + maskWidth/2)) isBlocked = true;
-                if (mode === 'edges_only' && (mx >= mirrorCenterX - maskWidth/2 && mx <= mirrorCenterX + maskWidth/2)) isBlocked = true;
-                ctx.fillStyle = isBlocked ? '#1a1a1a' : '#777'; 
-                ctx.fillRect(mx, mirrorY, 2, 10);
+                let isBlocked = (mode === 'center_only' && (mx < mirrorCenterX - maskWidth/2 || mx > mirrorCenterX + maskWidth/2)) || 
+                                (mode === 'edges_only' && (mx >= mirrorCenterX - maskWidth/2 && mx <= mirrorCenterX + maskWidth/2));
+                ctx.fillStyle = isBlocked ? '#1a1a1a' : '#777'; ctx.fillRect(mx, mirrorY, 2, 10);
             }
-            ctx.fillStyle = '#aaa'; ctx.textAlign = 'center'; ctx.font = '14px Pretendard';
-            ctx.fillText('거울 표면', mirrorCenterX, mirrorY + 32);
-
+            ctx.fillStyle = '#aaa'; ctx.textAlign = 'center'; ctx.font = '14px Pretendard'; ctx.fillText('거울 표면', mirrorCenterX, mirrorY + 32);
+            
             const sColor = sourceVal >= 0 ? `rgba(255, 80, 80, ${0.5 + Math.abs(sourceVal)*0.5})` : `rgba(80, 150, 255, ${0.5 + Math.abs(sourceVal)*0.5})`;
-            ctx.fillStyle = sColor;
-            ctx.beginPath(); ctx.arc(startX, startY, 8 + Math.abs(sourceVal)*5, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(startX, startY, 4, 0, Math.PI*2); ctx.fill();
-            ctx.fillText('광원(A)', startX, startY - 25);
-
-            const intensity = Math.abs(averageAmp); 
-            const visualGlow = Math.min(1.0, intensity / 1.5);
+            ctx.fillStyle = sColor; ctx.beginPath(); ctx.arc(startX, startY, 8 + Math.abs(sourceVal)*5, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(startX, startY, 4, 0, Math.PI*2); ctx.fill(); ctx.fillText('광원(A)', startX, startY - 25);
+            
+            const intensity = Math.abs(averageAmp); const visualGlow = Math.min(1.0, intensity / 1.5);
             let endColor = averageAmp > 0 ? `rgba(255, 80, 80, ${0.3 + visualGlow})` : `rgba(80, 150, 255, ${0.3 + visualGlow})`;
             let glowRadius = 8 + visualGlow * 30;
-
-            ctx.fillStyle = endColor;
-            ctx.beginPath(); ctx.arc(endX, endY, glowRadius, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(endX, endY, 4, 0, Math.PI*2); ctx.fill();
-            ctx.fillText('목적지(B)', endX, endY - 25);
-
-            const graphWidth = 140;
-            const graphHeight = 100; 
+            ctx.fillStyle = endColor; ctx.beginPath(); ctx.arc(endX, endY, glowRadius, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(endX, endY, 4, 0, Math.PI*2); ctx.fill(); ctx.fillText('목적지(B)', endX, endY - 25);
             
-            drawRealtimeGraph(startX - graphWidth - 30, startY, graphWidth, graphHeight, sourceHistory, '출발하는 파동 (진폭 1)', 1.5);
-            drawRealtimeGraph(endX + 30, endY, graphWidth, graphHeight, destHistory, '도착한 파동 합계', 2.5);
+            drawRealtimeGraph(startX - 170, startY, 140, 100, sourceHistory, '출발하는 파동 (진폭 1)', 1.5);
+            drawRealtimeGraph(endX + 30, endY, 140, 100, destHistory, '도착한 파동 합계', 2.5);
+            
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+
+    // ===================================================
+    // 시뮬레이션 3 (호이겐스 전파 원리 및 슬릿)
+    // ===================================================
+    function initSim3() {
+        const canvas = document.getElementById('canvas3');
+        const ctx = canvas.getContext('2d');
+        const dotCountSlider = document.getElementById('dotCount3');
+        const dotCountVal = document.getElementById('dotCountVal3');
+        const opacitySlider = document.getElementById('opacitySlider3');
+        const opacityVal = document.getElementById('opacityVal3');
+        const modeBtns = document.querySelectorAll('#sim3-wrapper .btn:not(.btn-slit)');
+        const slitToggle = document.getElementById('slitToggle3');
+
+        let mode = 'both';
+        let frameCounter = 0;
+        let wavelets = [];
+        let showSlit = false;
+        
+        const v = 0.5; 
+        const emitInterval = 80; 
+        const maxWaveRadius = 250; 
+
+        function resize() {
+            if(currentTab !== 3) return;
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        dotCountSlider.addEventListener('input', (e) => {
+            dotCountVal.textContent = e.target.value + '개';
+            resetSim();
+        });
+
+        opacitySlider.addEventListener('input', (e) => {
+            if(e.target.value < 0.15) opacityVal.textContent = '연하게';
+            else if(e.target.value > 0.4) opacityVal.textContent = '진하게';
+            else opacityVal.textContent = '기본';
+        });
+
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                mode = btn.dataset.mode;
+            });
+        });
+
+        slitToggle.addEventListener('click', () => {
+            showSlit = !showSlit;
+            slitToggle.classList.toggle('active');
+            resetSim();
+        });
+
+        function resetSim() {
+            frameCounter = 0;
+            wavelets = [];
+        }
+
+        function draw() {
+            if(currentTab !== 3) { requestAnimationFrame(draw); return; }
+            const width = canvas.width / window.devicePixelRatio;
+            const height = canvas.height / window.devicePixelRatio;
+            
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.6)';
+            ctx.fillRect(0, 0, width, height);
+
+            const cx = 200; 
+            const cy = height / 2;
+            const barrierX = cx + 250;
+            const barrierWidth = 15;
+            const barrierRight = barrierX + barrierWidth; // 우측 표면을 새로운 출발점으로 설정!
+            const slitSize = 40;
+
+            frameCounter++;
+            const currentRadius = frameCounter * v;
+            const nDots = parseInt(dotCountSlider.value);
+            const baseOpacity = parseFloat(opacitySlider.value);
+
+            if (currentRadius > width + 100) resetSim();
+
+            const distToBarrierRight = barrierRight - cx;
+            const r_slit = currentRadius - distToBarrierRight;
+
+            // 1. 슬릿(장애물) 렌더링
+            if (showSlit) {
+                ctx.fillStyle = '#333';
+                ctx.fillRect(barrierX, 0, barrierWidth, cy - slitSize/2);
+                ctx.fillRect(barrierX, cy + slitSize/2, barrierWidth, height - (cy + slitSize/2));
+                
+                ctx.strokeStyle = '#4fc3f7';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(barrierX, cy - slitSize/2, barrierWidth, slitSize);
+            }
+
+            // 2. 파동 생성
+            if (frameCounter > 0 && frameCounter % emitInterval === 0) {
+                for (let i = 0; i < nDots; i++) {
+                    const angle = (i / nDots) * Math.PI * 2;
+                    const emitX = cx + currentRadius * Math.cos(angle);
+                    const emitY = cy + currentRadius * Math.sin(angle);
+                    if (!showSlit || emitX <= barrierX) {
+                        wavelets.push({ x: emitX, y: emitY, birthFrame: frameCounter, type: 'main' });
+                    }
+                }
+                
+                // [요청 반영] 슬릿 통과 시 벽의 우측 표면(barrierRight)에서 새로운 광원 시작!
+                if (showSlit && r_slit > 0) {
+                    const nSlitDots = Math.floor(nDots / 2) + 1; 
+                    for (let i = 0; i < nSlitDots; i++) {
+                        const angle = -Math.PI/2 + (i / (nSlitDots - 1)) * Math.PI;
+                        const emitX = barrierRight + r_slit * Math.cos(angle);
+                        const emitY = cy + r_slit * Math.sin(angle);
+                        wavelets.push({ x: emitX, y: emitY, birthFrame: frameCounter, type: 'slit' });
+                    }
+                }
+            }
+
+            wavelets = wavelets.filter(w => (frameCounter - w.birthFrame) * v <= maxWaveRadius);
+
+            // 3. 2차 파동(파란 원) 렌더링
+            if (mode === 'secondary' || mode === 'both') {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen'; 
+                wavelets.forEach(w => {
+                    const r = (frameCounter - w.birthFrame) * v;
+                    if (r > 0) {
+                        let fadeRatio = 1 - (r / maxWaveRadius);
+                        const finalOpacity = baseOpacity * Math.pow(Math.max(0, fadeRatio), 1.5); 
+                        ctx.lineWidth = 2.5;
+                        ctx.strokeStyle = `rgba(79, 195, 247, ${finalOpacity})`;
+
+                        if (showSlit) {
+                            if (w.type === 'main') { 
+                                ctx.save();
+                                ctx.beginPath(); ctx.rect(0, 0, barrierX, height); ctx.clip();
+                                ctx.beginPath(); ctx.arc(w.x, w.y, r, 0, Math.PI * 2); ctx.stroke();
+                                ctx.restore();
+                            } else { 
+                                // 우측 끝(barrierRight) 기준으로 클리핑
+                                ctx.save();
+                                ctx.beginPath(); ctx.rect(barrierRight, 0, width - barrierRight, height); ctx.clip();
+                                ctx.beginPath(); ctx.arc(w.x, w.y, r, 0, Math.PI * 2); ctx.stroke();
+                                ctx.restore();
+                            }
+                        } else {
+                            ctx.beginPath(); ctx.arc(w.x, w.y, r, 0, Math.PI * 2); ctx.stroke();
+                        }
+                    }
+                });
+                ctx.restore();
+            }
+
+            // 4. 1차 파동(흰색 파면과 점) 렌더링
+            if (mode === 'primary' || mode === 'both') {
+                ctx.save();
+                if (showSlit) {
+                    ctx.beginPath(); ctx.rect(0, 0, barrierX, height); ctx.clip();
+                }
+                ctx.beginPath(); ctx.arc(cx, cy, currentRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                for (let i = 0; i < nDots; i++) {
+                    const angle = (i / nDots) * Math.PI * 2;
+                    const dotX = cx + currentRadius * Math.cos(angle);
+                    const dotY = cy + currentRadius * Math.sin(angle);
+                    ctx.shadowBlur = 8; ctx.shadowColor = '#ffffff';
+                    ctx.beginPath(); ctx.arc(dotX, dotY, 2.5, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.restore();
+
+                // 슬릿 통과 후 새로운 점광원 (우측 표면 기준)
+                if (showSlit && r_slit > 0) {
+                    ctx.save();
+                    ctx.beginPath(); ctx.rect(barrierRight, 0, width - barrierRight, height); ctx.clip();
+                    
+                    ctx.beginPath(); ctx.arc(barrierRight, cy, r_slit, -Math.PI/2, Math.PI/2);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    const nSlitDots = Math.floor(nDots / 2) + 1;
+                    for (let i = 0; i < nSlitDots; i++) {
+                        const angle = -Math.PI/2 + (i / (nSlitDots - 1)) * Math.PI;
+                        const dotX = barrierRight + r_slit * Math.cos(angle);
+                        const dotY = cy + r_slit * Math.sin(angle);
+                        ctx.shadowBlur = 8; ctx.shadowColor = '#ffffff';
+                        ctx.beginPath(); ctx.arc(dotX, dotY, 2.5, 0, Math.PI * 2); ctx.fill();
+                    }
+                    ctx.restore();
+
+                    // 벽 우측면에 위치한 새로운 광원 표시!
+                    ctx.fillStyle = '#deff9a';
+                    ctx.shadowBlur = 15; ctx.shadowColor = '#deff9a';
+                    ctx.beginPath(); ctx.arc(barrierRight, cy, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath(); ctx.arc(barrierRight, cy, 2, 0, Math.PI * 2); ctx.fill();
+                }
+            }
+
+            // 5. 최초 중앙 광원
+            ctx.fillStyle = '#deff9a';
+            ctx.shadowBlur = 15; ctx.shadowColor = '#deff9a';
+            ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill();
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 15px Pretendard';
+            ctx.textAlign = 'center';
+            ctx.fillText('광원', cx, cy - 18);
 
             requestAnimationFrame(draw);
         }
-
         draw();
     }
 
     // ---------------------------------------------------
-    // 페이지 로드 시 시뮬레이션 개별 초기화
+    // 페이지 로드 시 3개의 시뮬레이션 모두 대기 상태로 초기화
     // ---------------------------------------------------
     initSim1();
     initSim2();
+    initSim3();
 </script>
-
 </body>
 </html>
